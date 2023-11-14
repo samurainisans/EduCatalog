@@ -9,6 +9,5 @@ class LogEntry(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     action = db.Column(db.String(64), nullable=False)
 
-    # Представление объекта в виде строки
     def __repr__(self):
         return f'<LogEntry {self.action} by {self.user_id} at {self.timestamp}>'

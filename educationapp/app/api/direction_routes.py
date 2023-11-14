@@ -14,6 +14,7 @@ def get_directions():
     specialties = Specialty.query.all()
     return render_template('directions.html', directions=directions, specialties=specialties)
 
+
 @direction_blueprint.route('/directions', methods=['POST'])
 def create_direction():
     title = request.form.get('title')
@@ -39,3 +40,11 @@ def update_direction(direction_id):
     direction.specialty_id = data['specialty_id']
     db.session.commit()
     return jsonify(direction.to_dict()), 200
+
+
+@direction_blueprint.route('/directions/<int:id>/delete', methods=['POST'])
+def delete_direction(id):
+    direction = Direction.query.get_or_404(id)
+    db.session.delete(direction)
+    db.session.commit()
+    return redirect(url_for('direction.get_directions'))

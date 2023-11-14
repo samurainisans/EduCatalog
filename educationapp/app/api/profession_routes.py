@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, abort, url_for
+from flask import Blueprint, render_template, url_for
 from flask import jsonify, request
-from flask_login import login_required, current_user
 from werkzeug.utils import redirect
 
 from educationapp.app import db
@@ -33,14 +32,29 @@ def add_profession():
     return render_template('professions.html', professions=Profession.query.all())
 
 
-
-@profession_blueprint.route('/professions/<int:id>', methods=['DELETE'])
+@profession_blueprint.route('/professions/delete/<int:id>', methods=['POST'])
 def delete_profession(id):
-    profession = Profession.query.get(id)
-    if not profession:
-        return jsonify({'error': 'Profession not found'}), 404
-
+    profession = Profession.query.get_or_404(id)
     db.session.delete(profession)
     db.session.commit()
+    return redirect(url_for('profession.get_professions'))
 
-    return jsonify({'message': 'Profession deleted'}), 200
+
+@profession_blueprint.route('/professions/<int:id>', methods=['PUT'])
+def update_profession(id):
+    profession = Profession.query.get_or_404(id)
+    new_name = request.form.get('name')
+    if new_name:
+        profession.name = new_name
+        db.session.commit()
+    return redirect(url_for('profession.get_professions'))
+
+
+@profession_blueprint.route('/professions/edit/<int:id>', methods=['POST'])
+def edit_profession(id):
+    profession = Profession.query.get_or_404(id)
+    new_name = request.form.get('name')
+    if new_name:
+        profession.name = new_name
+        db.session.commit()
+    return redirect(url_for('profession.get_professions'))

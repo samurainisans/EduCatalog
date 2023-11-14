@@ -20,6 +20,7 @@ user_blueprint = Blueprint('user', __name__)
 def home():
     return render_template('home.html')
 
+
 @user_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -49,6 +50,7 @@ def login():
 
     return render_template('login.html')
 
+
 @app.before_request
 def log_user_action():
     if current_user.is_authenticated:
@@ -74,10 +76,12 @@ def logout():
     flash('Вы успешно вышли из системы', 'success')
     return redirect(url_for('user.login'))
 
+
 @user_blueprint.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
+
 
 @user_blueprint.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -85,6 +89,7 @@ def get_user(user_id):
     if user:
         return jsonify(user.to_dict())
     return jsonify({'message': 'User not found'}), 404
+
 
 @user_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
