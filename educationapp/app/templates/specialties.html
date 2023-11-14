@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Специальности</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">Направления и специальности</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/directions">Направления</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/specialties">Специальности</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/professions">Профессии</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                <span class="navbar-text">
+                    {{ current_user.username }} ({{ current_user.role.name }})
+                </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.logout') }}">Выйти</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.login') }}">Войти</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.register') }}">Регистрация</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1>Список специальностей</h1>
+    <div id="specialtiesList" class="row">
+        {% for specialty in specialties %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ specialty.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ specialty.code }}</h6>
+                    <p class="card-text">
+                        Профессия: {{ specialty.profession.name }}<br>
+                        Образовательная программа: {{ specialty.education_program }}<br>
+                        Уровень образования: {{ specialty.education_level }}<br>
+                        Форма обучения: {{ specialty.form_of_education }}<br>
+                        Нормативный срок обучения: {{ specialty.standard_education_duration }}<br>
+                        Присваиваемые квалификации: {{ specialty.qualification }}
+                    </p>
+                    {% if current_user.is_authenticated and current_user.role.name == 'Administrator' %}
+                    <form action="{{ url_for('specialty.delete_specialty', id=specialty.id) }}" method="post">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if current_user.is_authenticated and current_user.role.name == 'Administrator' %}
+    <form action="/specialties" method="post">
+        <div class="form-group">
+            <label for="name">Название специальности</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="code">Код специальности</label>
+            <input type="text" class="form-control" id="code" name="code" required>
+        </div>
+        <div class="form-group">
+            <label for="profession_id">Профессия</label>
+            <select class="form-control" id="profession_id" name="profession_id" required>
+                {% for profession in professions %}
+                <option value="{{ profession.id }}">{{ profession.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="education_program">Образовательная программа</label>
+            <input type="text" class="form-control" id="education_program" name="education_program" required>
+        </div>
+        <div class="form-group">
+            <label for="education_level">Уровень образования</label>
+            <input type="text" class="form-control" id="education_level" name="education_level" required>
+        </div>
+        <div class="form-group">
+            <label for="form_of_education">Форма обучения</label>
+            <select class="form-control" id="form_of_education" name="form_of_education" required>
+                <option value="Очная">Очная</option>
+                <option value="Заочная">Заочная</option>
+                <option value="Очно-заочная">Очно-заочная</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="standard_education_duration">Нормативный срок обучения</label>
+            <input type="text" class="form-control" id="standard_education_duration" name="standard_education_duration"
+                   required>
+        </div>
+        <div class="form-group">
+            <label for="qualification">Присваиваемые квалификации</label>
+            <input type="text" class="form-control" id="qualification" name="qualification" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить специальность</button>
+    </form>
+    {% endif %}
+</div>
+
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>
