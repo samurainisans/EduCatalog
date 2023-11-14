@@ -51,7 +51,7 @@
     <div id="specialtiesList" class="list-group">
         {% for specialty in specialties %}
         <a href="#" class="list-group-item list-group-item-action">
-            {{ specialty.name }} (Проходной балл: {{ specialty.cut_off_score }})
+            {{ specialty.name }}
         </a>
         {% endfor %}
     </div>
@@ -63,8 +63,42 @@
             <input type="text" class="form-control" id="name" name="name" required>
         </div>
         <div class="form-group">
-            <label for="cut_off_score">Проходной балл</label>
-            <input type="number" class="form-control" id="cut_off_score" name="cut_off_score" required>
+            <label for="code">Код специальности</label>
+            <input type="text" class="form-control" id="code" name="code" required>
+        </div>
+        <div class="form-group">
+            <label for="profession_id">Профессия</label>
+            <select class="form-control" id="profession_id" name="profession_id" required>
+                {% for profession in professions %}
+                <option value="{{ profession.id }}">{{ profession.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="education_program">Образовательная программа</label>
+            <input type="text" class="form-control" id="education_program" name="education_program" required>
+        </div>
+        <div class="form-group">
+            <label for="education_level">Уровень образования</label>
+            <input type="text" class="form-control" id="education_level" name="education_level" required>
+        </div>
+        <div class="form-group">
+            <label for="form_of_education">Форма обучения</label>
+            <select class="form-control" id="form_of_education" name="form_of_education" required>
+                <option value="Очная">Очная</option>
+                <option value="Заочная">Заочная</option>
+                <option value="Очно-заочная">Очно-заочная</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="standard_education_duration">Нормативный срок обучения</label>
+            <input type="text" class="form-control" id="standard_education_duration" name="standard_education_duration"
+                   required>
+        </div>
+        <div class="form-group">
+            <label for="qualification">Присваиваемые квалификации</label>
+            <input type="text" class="form-control" id="qualification" name="qualification" required>
         </div>
         <button type="submit" class="btn btn-primary">Добавить специальность</button>
     </form>

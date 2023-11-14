@@ -6,7 +6,6 @@ from educationapp.app.models.session import Session
 
 session_blueprint = Blueprint('session', __name__)
 
-
 # Получение списка всех сессий
 @session_blueprint.route('/sessions', methods=['GET'])
 def get_sessions():

@@ -14,7 +14,6 @@ def get_directions():
     specialties = Specialty.query.all()
     return render_template('directions.html', directions=directions, specialties=specialties)
 
-
 @direction_blueprint.route('/directions', methods=['POST'])
 def create_direction():
     title = request.form.get('title')

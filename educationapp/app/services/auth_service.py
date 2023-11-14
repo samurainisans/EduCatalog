@@ -18,7 +18,7 @@ def init_auth(app):
 def authenticate_user(username, password):
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password_hash, password):
-        login_user(user)  # Теперь `login_user` вызывается здесь
+        login_user(user)
         return user
     else:
         return None
