@@ -20,8 +20,6 @@ user_blueprint = Blueprint('user', __name__)
 def home():
     return render_template('home.html')
 
-
-# Вход пользователя
 @user_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -34,38 +32,38 @@ def login():
 
         user = authenticate_user(username, password)
         if user:
-            # `login_user` вызывается внутри `authenticate_user`
             flash('Вход выполнен успешно', 'success')
 
-            # Создаем новую запись в журнале
             new_log_entry = LogEntry(user_id=current_user.id, action='login')
             db.session.add(new_log_entry)
 
-            # Создаем новую сессию
             new_session = Session(user_id=current_user.id)
             db.session.add(new_session)
 
             db.session.commit()
 
-            return redirect(url_for('user.home'))  # Убедитесь, что у вас есть endpoint для 'home'
+            return redirect(url_for('user.home'))
         else:
             flash('Неверное имя пользователя или пароль', 'danger')
             return render_template('login.html')
 
-    # Если метод GET, показываем страницу входа
     return render_template('login.html')
 
+@app.before_request
+def log_user_action():
+    if current_user.is_authenticated:
+        new_session = Session(user_id=current_user.id)
+        db.session.add(new_session)
+        db.session.commit()
 
 
 @user_blueprint.route('/logout', methods=['GET'])
 @login_required
 def logout():
-    if current_user.is_authenticated:  # Проверяем, вошел ли пользователь в систему
-        # Создаем новую запись в журнале
+    if current_user.is_authenticated:
         new_log_entry = LogEntry(user_id=current_user.id, action='logout')
         db.session.add(new_log_entry)
 
-        # Закрываем текущую сессию
         current_session = Session.query.filter_by(user_id=current_user.id).order_by(Session.timestamp.desc()).first()
         if current_session:
             db.session.delete(current_session)
@@ -74,18 +72,13 @@ def logout():
 
     logout_user()
     flash('Вы успешно вышли из системы', 'success')
-    return redirect(url_for('user.login'))  # Перенаправляем на страницу входа
+    return redirect(url_for('user.login'))
 
-
-
-# Получение списка всех пользователей
 @user_blueprint.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
-
-# Получение информации о пользователе по ID
 @user_blueprint.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.query.get(user_id)
@@ -93,8 +86,6 @@ def get_user(user_id):
         return jsonify(user.to_dict())
     return jsonify({'message': 'User not found'}), 404
 
-
-# Создание нового пользователя
 @user_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -106,19 +97,14 @@ def register():
             flash('Пользователь с таким именем уже существует', 'danger')
             return render_template('register.html')
 
-        # Хешируем пароль перед сохранением в базу данных
         hashed_password = generate_password_hash(password)
 
-        # Здесь мы находим роль по умолчанию, которую хотим назначить новым пользователям
-        # Убедитесь, что эта роль существует в базе данных
         default_role = Role.query.filter_by(name='User').first()
         if not default_role:
-            # Если роль по умолчанию не найдена, создаем ее
             default_role = Role(name='User')
             db.session.add(default_role)
             db.session.commit()
 
-        # Создаем нового пользователя с ролью по умолчанию
         new_user = User(username=username, password_hash=hashed_password, role=default_role)
 
         db.session.add(new_user)
@@ -130,7 +116,6 @@ def register():
     return render_template('register.html')
 
 
-# Обновление пользователя
 @user_blueprint.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     user = User.query.get(user_id)

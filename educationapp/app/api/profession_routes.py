@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, abort, url_for
 from flask import jsonify, request
+from flask_login import login_required, current_user
+from werkzeug.utils import redirect
+
 from educationapp.app import db
 from educationapp.app.models.profession import Profession
 
@@ -28,6 +31,7 @@ def add_profession():
     db.session.commit()
 
     return render_template('professions.html', professions=Profession.query.all())
+
 
 
 @profession_blueprint.route('/professions/<int:id>', methods=['DELETE'])

@@ -2,12 +2,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from educationapp.app.database import db
 
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from educationapp.app.database import db
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'

@@ -1,4 +1,5 @@
-from flask import jsonify, request, Blueprint, render_template, url_for
+from flask import jsonify, request, Blueprint, render_template, url_for, abort
+from flask_login import login_required, current_user
 from werkzeug.utils import redirect
 
 from educationapp.app.database import db
@@ -23,6 +24,14 @@ def get_specialty(specialty_id):
     if specialty:
         return jsonify(specialty.to_dict())
     return jsonify({'message': 'Specialty not found'}), 404
+
+
+@specialty_blueprint.route('/specialty/<int:id>/delete', methods=['POST'])
+def delete_specialty(id):
+    specialty = Specialty.query.get_or_404(id)
+    db.session.delete(specialty)
+    db.session.commit()
+    return redirect(url_for('specialty.get_specialties'))
 
 
 @specialty_blueprint.route('/specialties', methods=['POST'])

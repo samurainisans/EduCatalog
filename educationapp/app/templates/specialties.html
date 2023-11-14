@@ -51,11 +51,29 @@
 
 <div class="container mt-4">
     <h1>Список специальностей</h1>
-    <div id="specialtiesList" class="list-group">
+    <div id="specialtiesList" class="row">
         {% for specialty in specialties %}
-        <a href="#" class="list-group-item list-group-item-action">
-            {{ specialty.name }}
-        </a>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ specialty.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ specialty.code }}</h6>
+                    <p class="card-text">
+                        Профессия: {{ specialty.profession.name }}<br>
+                        Образовательная программа: {{ specialty.education_program }}<br>
+                        Уровень образования: {{ specialty.education_level }}<br>
+                        Форма обучения: {{ specialty.form_of_education }}<br>
+                        Нормативный срок обучения: {{ specialty.standard_education_duration }}<br>
+                        Присваиваемые квалификации: {{ specialty.qualification }}
+                    </p>
+                    {% if current_user.is_authenticated and current_user.role.name == 'Administrator' %}
+                    <form action="{{ url_for('specialty.delete_specialty', id=specialty.id) }}" method="post">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
         {% endfor %}
     </div>
 
