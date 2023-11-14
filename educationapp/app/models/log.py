@@ -7,7 +7,7 @@ class LogEntry(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('log_entries', lazy=True))
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    action = db.Column(db.String(64), nullable=False)  # Действие, например, 'login' или 'logout'
+    action = db.Column(db.String(64), nullable=False)
 
     # Представление объекта в виде строки
     def __repr__(self):

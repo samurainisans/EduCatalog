@@ -15,7 +15,6 @@ def init_auth(app):
     login_manager.login_view = 'user.login'
     login_manager.init_app(app)
 
-
 def authenticate_user(username, password):
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password_hash, password):

@@ -48,9 +48,16 @@
 
 <div class="container mt-4">
     <h1>Список направлений</h1>
-    <div id="directionsList" class="list-group">
+    <div id="directionsList" class="row">
         {% for direction in directions %}
-        <a href="#" class="list-group-item list-group-item-action">{{ direction.title }}</a>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ direction.title }}</h5>
+                    <p class="card-text">Специальность: {{ direction.specialty.name }}</p>
+                </div>
+            </div>
+        </div>
         {% endfor %}
     </div>
 
@@ -79,7 +86,6 @@
     </form>
     {% endif %}
 </div>
-
 
 
 

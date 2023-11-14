@@ -1,7 +1,9 @@
 from flask import Blueprint, flash, redirect, url_for, render_template
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 
 from educationapp.app.database import db
+from educationapp.app.models.log import LogEntry
+from educationapp.app.models.session import Session
 from educationapp.app.models.user import User, Role
 
 from flask import Flask, request, jsonify
@@ -34,6 +36,17 @@ def login():
         if user:
             # `login_user` вызывается внутри `authenticate_user`
             flash('Вход выполнен успешно', 'success')
+
+            # Создаем новую запись в журнале
+            new_log_entry = LogEntry(user_id=current_user.id, action='login')
+            db.session.add(new_log_entry)
+
+            # Создаем новую сессию
+            new_session = Session(user_id=current_user.id)
+            db.session.add(new_session)
+
+            db.session.commit()
+
             return redirect(url_for('user.home'))  # Убедитесь, что у вас есть endpoint для 'home'
         else:
             flash('Неверное имя пользователя или пароль', 'danger')
@@ -43,12 +56,26 @@ def login():
     return render_template('login.html')
 
 
+
 @user_blueprint.route('/logout', methods=['GET'])
 @login_required
 def logout():
+    if current_user.is_authenticated:  # Проверяем, вошел ли пользователь в систему
+        # Создаем новую запись в журнале
+        new_log_entry = LogEntry(user_id=current_user.id, action='logout')
+        db.session.add(new_log_entry)
+
+        # Закрываем текущую сессию
+        current_session = Session.query.filter_by(user_id=current_user.id).order_by(Session.timestamp.desc()).first()
+        if current_session:
+            db.session.delete(current_session)
+
+        db.session.commit()
+
     logout_user()
     flash('Вы успешно вышли из системы', 'success')
     return redirect(url_for('user.login'))  # Перенаправляем на страницу входа
+
 
 
 # Получение списка всех пользователей
