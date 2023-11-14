@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Специальности</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">EduCatalog</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/directions">Направления</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/specialties">Специальности</a>
+                </li>
+            </ul>
+    <ul class="navbar-nav ml-auto">
+        {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <span class="navbar-text">
+                    {{ current_user.username }} ({{ current_user.role.name }})
+                </span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user.logout') }}">Выйти</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user.login') }}">Войти</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('user.register') }}">Регистрация</a>
+            </li>
+        {% endif %}
+    </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container mt-4">
+    <h1>Список специальностей</h1>
+    <div id="specialtiesList" class="list-group">
+        {% for specialty in specialties %}
+        <a href="#" class="list-group-item list-group-item-action">
+            {{ specialty.name }} (Проходной балл: {{ specialty.cut_off_score }})
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
