@@ -9,7 +9,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-            <a class="navbar-brand" href="/">EduCatalog</a>
+        <a class="navbar-brand" href="/">EduCatalog</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -22,12 +22,29 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/specialties">Специальности</a>
                 </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout">Выйти</a>
+                <span class="navbar-text">
+                    {{ current_user.username }} ({{ current_user.role.name }})
+                </span>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.logout') }}">Выйти</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.login') }}">Войти</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.register') }}">Регистрация</a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>
+
 </nav>
 
 <div class="container mt-4">
@@ -37,8 +54,34 @@
         <a href="#" class="list-group-item list-group-item-action">{{ direction.title }}</a>
         {% endfor %}
     </div>
+
+    <!-- Форма для добавления направления -->
+    <form action="/directions" method="post">
+        <div class="form-group">
+            <label for="title">Название направления</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="specialty_id">Специальность</label>
+            {% if specialties|length > 0 %}
+            <select class="form-control" id="specialty_id" name="specialty_id" required>
+                {% for specialty in specialties %}
+                <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                {% endfor %}
+            </select>
+            {% else %}
+            <p>Специальности еще не добавлены, направления нельзя создать. Для начала <a href="/specialties">создайте специальности</a>.</p>
+            {% endif %}
+        </div>
+        {% if specialties|length > 0 %}
+        <button type="submit" class="btn btn-primary">Добавить направление</button>
+        {% endif %}
+    </form>
 </div>
 
+
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
