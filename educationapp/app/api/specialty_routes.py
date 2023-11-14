@@ -1,4 +1,5 @@
-from flask import jsonify, request, Blueprint, render_template, url_for
+from flask import jsonify, request, Blueprint, render_template, url_for, abort
+from flask_login import current_user
 from werkzeug.utils import redirect
 
 from educationapp.app.database import db
@@ -23,21 +24,22 @@ def get_specialty(specialty_id):
     return jsonify({'message': 'Specialty not found'}), 404
 
 
-# Создание новой специальности
 @specialty_blueprint.route('/specialties', methods=['POST'])
 def create_specialty():
-    name = request.form.get('name')
-    cut_off_score = request.form.get('cut_off_score')
+    # Проверяем, является ли текущий пользователь администратором
+    if not current_user.is_authenticated or current_user.role.name != 'Administrator':
+        abort(403)  # Если нет, возвращаем ошибку 403 Forbidden
 
-    if not name or not cut_off_score:
-        return jsonify({'error': 'Некорректные данные'}), 400
+    # Если пользователь - администратор, продолжаем как обычно
+    data = request.json
+    name = data.get('name')
+    cut_off_score = data.get('cut_off_score')
 
-    if Specialty.query.filter_by(name=name).first():
-        return jsonify({'error': 'Специальность уже существует'}), 409
+    if not name or cut_off_score is None:
+        return jsonify({'message': 'Missing name or cut_off_score'}), 400
 
     new_specialty = Specialty(name=name, cut_off_score=cut_off_score)
     db.session.add(new_specialty)
     db.session.commit()
-    return redirect(url_for('specialty.get_specialties'))
 
-
+    return jsonify({'message': 'Specialty created'}), 201

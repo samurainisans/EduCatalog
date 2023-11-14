@@ -3,6 +3,7 @@ from flask import Flask
 from educationapp.app.config import Config
 from educationapp.app.database import db
 from educationapp.app.models import direction, log, session, specialty, user
+from educationapp.app.models.user import Role
 from educationapp.app.services.auth_service import init_auth
 
 
@@ -13,6 +14,13 @@ def create_app():
     db.init_app(app)
     with app.app_context():
         db.create_all()
+        # Создаем роли, если они еще не существуют
+        if Role.query.count() == 0:
+            roles = ['Administrator', 'User', 'Guest']
+            for role_name in roles:
+                role = Role(name=role_name)
+                db.session.add(role)
+            db.session.commit()
 
     init_auth(app)
 

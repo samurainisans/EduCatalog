@@ -44,7 +44,6 @@
             </ul>
         </div>
     </div>
-
 </nav>
 
 <div class="container mt-4">
@@ -55,7 +54,7 @@
         {% endfor %}
     </div>
 
-    <!-- Форма для добавления направления -->
+    {% if current_user.is_authenticated and current_user.role.name == 'Administrator' %}
     <form action="/directions" method="post">
         <div class="form-group">
             <label for="title">Название направления</label>
@@ -70,14 +69,17 @@
                 {% endfor %}
             </select>
             {% else %}
-            <p>Специальности еще не добавлены, направления нельзя создать. Для начала <a href="/specialties">создайте специальности</a>.</p>
+            <p>Специальности еще не добавлены, направления нельзя создать. Для начала <a href="/specialties">создайте
+                специальности</a>.</p>
             {% endif %}
         </div>
         {% if specialties|length > 0 %}
         <button type="submit" class="btn btn-primary">Добавить направление</button>
         {% endif %}
     </form>
+    {% endif %}
 </div>
+
 
 
 

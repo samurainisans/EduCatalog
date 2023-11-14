@@ -7,12 +7,12 @@ from educationapp.app.models.specialty import Specialty
 
 direction_blueprint = Blueprint('direction', __name__)
 
+
 @direction_blueprint.route('/directions')
 def get_directions():
     directions = Direction.query.all()
     specialties = Specialty.query.all()
     return render_template('directions.html', directions=directions, specialties=specialties)
-
 
 
 @direction_blueprint.route('/directions', methods=['POST'])
