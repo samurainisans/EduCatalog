@@ -25,6 +25,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/professions">Профессии</a>
                 </li>
+                {% if current_user.is_authenticated and current_user.role.name == 'Manager' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/review">Отчет</a>
+                </li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
