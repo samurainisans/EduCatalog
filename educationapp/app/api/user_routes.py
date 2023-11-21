@@ -2,8 +2,11 @@ from flask import Blueprint, flash, redirect, url_for, render_template
 from flask_login import login_user, login_required, logout_user, current_user
 
 from educationapp.app.database import db
+from educationapp.app.models.direction import Direction
 from educationapp.app.models.log import LogEntry
+from educationapp.app.models.profession import Profession
 from educationapp.app.models.session import Session
+from educationapp.app.models.specialty import Specialty
 from educationapp.app.models.user import User, Role
 
 from flask import Flask, request, jsonify
@@ -75,6 +78,49 @@ def logout():
     logout_user()
     flash('Вы успешно вышли из системы', 'success')
     return redirect(url_for('user.login'))
+
+
+def combine_data(directions, logs, professions, sessions, specialties):
+    combined_data = []
+
+    for direction in directions:
+        related_logs = [log for log in logs if log.user_id == direction.specialty_id]
+        related_profession = next((prof for prof in professions if prof.id == direction.specialty_id), None)
+        related_sessions = [session for session in sessions if session.user_id == direction.specialty_id]
+        related_specialty = next((spec for spec in specialties if spec.id == direction.specialty_id), None)
+
+        combined_entry = {
+            "direction": direction,
+            "related_logs": related_logs,
+            "related_profession": related_profession,
+            "related_sessions": related_sessions,
+            "related_specialty": related_specialty
+        }
+
+        combined_data.append(combined_entry)
+
+    return combined_data
+
+
+
+
+@user_blueprint.route('/review')
+@login_required
+def review():
+    if current_user.role.name != 'Manager':
+        return redirect(url_for('home.html'))
+
+    # Example queries (to be adjusted based on your actual data relationships)
+    directions = Direction.query.all()
+    logs = LogEntry.query.all()
+    professions = Profession.query.all()
+    sessions = Session.query.all()
+    specialties = Specialty.query.all()
+
+    # Combine the data in a meaningful way
+    combined_data = combine_data(directions, logs, professions, sessions, specialties)
+
+    return render_template('review.html', data=combined_data)
 
 
 @user_blueprint.route('/users', methods=['GET'])

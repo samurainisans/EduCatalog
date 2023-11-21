@@ -28,7 +28,6 @@
                 {% if current_user.is_authenticated and current_user.role.name == 'Manager' %}
                 <li class="nav-item">
                     <a class="nav-link" href="/review">Отчет</a>
-
                 </li>
                 {% endif %}
             </ul>
@@ -55,35 +54,29 @@
     </div>
 </nav>
 
-<div class="container mt-4">
-    <h1>Список профессий</h1>
-    <div id="professionsList" class="row">
-        {% for profession in professions %}
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">{{ profession.name }}</h5>
-                    {% if current_user.is_authenticated and current_user.role.name == 'Administrator' %}
-                    <form action="{{ url_for('profession.delete_profession', id=profession.id) }}" method="post">
-                        <button type="submit" class="btn btn-danger">Удалить</button>
-                    </form>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    {% if current_user.is_authenticated and current_user.role.name == 'Administrator' %}
-    <form action="/professions" method="post">
-        <div class="form-group">
-            <label for="name">Название профессии</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Добавить профессию</button>
-    </form>
-    {% endif %}
-</div>
+<h2>Обзор данных</h2>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Направление</th>
+        <th>Логи</th>
+        <th>Профессии</th>
+        <th>Сессии</th>
+        <th>Специальности</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in data %}
+    <tr>
+        <td>{{ item.direction.title }}</td>
+        <td>{{ item.related_logs | length }}</td>
+        <td>{{ item.related_profession.name }}</td>
+        <td>{{ item.related_sessions | length }}</td>
+        <td>{{ item.related_specialty.name }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
